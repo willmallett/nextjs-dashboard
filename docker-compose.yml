@@ -1,0 +1,21 @@
+services:
+  dashboardapidb:
+    container_name: dashboardapidb
+    image: dashboardapidb
+    build:
+      context: infrastructure/postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U flyway" ]
+      interval: 3s
+      timeout: 30s
+      retries: 10
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: password
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.128.5.0/24
