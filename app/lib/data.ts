@@ -9,17 +9,19 @@ import {
   Revenue, LatestInvoice,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export async function fetchRevenue(): Promise<Revenue[]> {
   // Add noStore() here to prevent the response from being cached.
   // This is equivalent to in fetch(..., {cache: 'no-store'}).
+  noStore(); // This opts whoever uses the fetchRevenue function to opt out of static site rendering (or rendering at build time when app deploys)
 
   try {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
 
-    // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
+    console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const data: Revenue[] = await sql`SELECT * FROM dashboard.revenue`;
 
@@ -31,6 +33,8 @@ export async function fetchRevenue(): Promise<Revenue[]> {
 }
 
 export async function fetchLatestInvoices(): Promise<LatestInvoice[]> {
+  noStore();
+
   try {
     const data: LatestInvoiceRaw[] = await sql`
       SELECT i.amount, c.name, c.image_url, c.email, i.id
@@ -52,6 +56,8 @@ export async function fetchLatestInvoices(): Promise<LatestInvoice[]> {
 }
 
 export async function fetchCardData() {
+  noStore();
+
   try {
     // You can probably combine these into a single SQL query
     // However, we are intentionally splitting them to demonstrate
@@ -91,6 +97,7 @@ export async function fetchCardData() {
 //   query: string,
 //   currentPage: number,
 // ) {
+//  noStore();
 //   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 //
 //   try {
@@ -123,6 +130,7 @@ export async function fetchCardData() {
 // }
 //
 // export async function fetchInvoicesPages(query: string) {
+//   noStore();
 //   try {
 //     const count = await sql`SELECT COUNT(*)
 //     FROM invoices
@@ -144,6 +152,7 @@ export async function fetchCardData() {
 // }
 //
 // export async function fetchInvoiceById(id: string) {
+//   noStore();
 //   try {
 //     const data = await sql<InvoiceForm>`
 //       SELECT
@@ -169,6 +178,7 @@ export async function fetchCardData() {
 // }
 //
 // export async function fetchCustomers() {
+//   noStore();
 //   try {
 //     const data = await sql<CustomerField>`
 //       SELECT
@@ -187,6 +197,7 @@ export async function fetchCardData() {
 // }
 //
 // export async function fetchFilteredCustomers(query: string) {
+//   noStore();
 //   try {
 //     const data = await sql<CustomersTableType>`
 // 		SELECT
@@ -220,6 +231,7 @@ export async function fetchCardData() {
 // }
 //
 // export async function getUser(email: string) {
+//   noStore();
 //   try {
 //     const user = await sql`SELECT * FROM users WHERE email=${email}`;
 //     return user.rows[0] as User;
