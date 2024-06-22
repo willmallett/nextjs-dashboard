@@ -4,12 +4,13 @@ import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
 import {lusitana} from '@/app/ui/fonts';
 import {fetchCardData, fetchLatestInvoices, fetchRevenue} from '@/app/lib/data';
 import {Suspense} from "react";
-import {RevenueChartSkeleton} from "@/app/ui/skeletons";
+import {InvoiceSkeleton, RevenueChartSkeleton} from "@/app/ui/skeletons";
 
 export default async function Page() {
     // this call is slow, moving it the RevenueChart component will make the page load faster
     // const revenue = await fetchRevenue();
-    const latestInvoices = await fetchLatestInvoices();
+    // moving this call into the LatestInvoices component as well:
+    // const latestInvoices = await fetchLatestInvoices();
     const {
         numberOfCustomers,
         numberOfInvoices,
@@ -36,7 +37,10 @@ export default async function Page() {
                 <Suspense fallback={<RevenueChartSkeleton />}>
                     <RevenueChart />
                 </Suspense>
-                <LatestInvoices latestInvoices={latestInvoices}/>
+                {/*// suspend the latest invoices component*/}
+                <Suspense fallback={<InvoiceSkeleton />}>
+                    <LatestInvoices />
+                </Suspense>
             </div>
         </main>
     );
