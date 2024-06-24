@@ -2,9 +2,10 @@ import CardWrapper, {Card} from '@/app/ui/dashboard/cards';
 import RevenueChart from '@/app/ui/dashboard/revenue-chart';
 import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
 import {lusitana} from '@/app/ui/fonts';
-import {fetchCardData, fetchLatestInvoices, fetchRevenue} from '@/app/lib/data';
 import {Suspense} from "react";
 import {CardSkeleton, InvoiceSkeleton, RevenueChartSkeleton} from "@/app/ui/skeletons";
+
+export const experimental_ppr = true; // enable partial pre-rendering for this route
 
 export default async function Page() {
     // this call is slow, moving it the RevenueChart component will make the page load faster
