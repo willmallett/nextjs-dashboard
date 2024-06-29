@@ -117,8 +117,7 @@ async function main() {
   await seedRevenue(sql);
 
   sql.end();
-
-  console.log(`Sql ended and is: ${sql}`);
+  console.log('Database seeding complete');
 }
 
 main().catch((err) => {

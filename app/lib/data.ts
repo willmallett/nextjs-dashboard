@@ -6,7 +6,7 @@ import {
   InvoicesTable,
   LatestInvoiceRaw,
   User,
-  Revenue, LatestInvoice,
+  Revenue, LatestInvoice, Customer,
 } from './definitions';
 import { formatCurrency } from './utils';
 import { unstable_noStore as noStore } from 'next/cache';
@@ -152,7 +152,7 @@ export async function fetchInvoicesPages(query: string) {
     throw new Error('Failed to fetch total number of invoices.');
   }
 }
-//
+
 // export async function fetchInvoiceById(id: string) {
 //   noStore();
 //   try {
@@ -178,26 +178,26 @@ export async function fetchInvoicesPages(query: string) {
 //     throw new Error('Failed to fetch invoice.');
 //   }
 // }
-//
-// export async function fetchCustomers() {
-//   noStore();
-//   try {
-//     const data = await sql<CustomerField>`
-//       SELECT
-//         id,
-//         name
-//       FROM customers
-//       ORDER BY name ASC
-//     `;
-//
-//     const customers = data.rows;
-//     return customers;
-//   } catch (err) {
-//     console.error('Database Error:', err);
-//     throw new Error('Failed to fetch all customers.');
-//   }
-// }
-//
+
+export async function fetchCustomers(): Promise<CustomerField[]> {
+  noStore();
+
+  try {
+    const data: CustomerField[] = await sql`
+      SELECT
+        id,
+        name
+      FROM dashboard.customers
+      ORDER BY name ASC
+    `;
+
+    return data;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch all customers.');
+  }
+}
+
 // export async function fetchFilteredCustomers(query: string) {
 //   noStore();
 //   try {
