@@ -109,8 +109,6 @@ async function main() {
     username: 'dashboard_api',
   });
 
-  console.log(`Sql is: ${sql}`);
-
   await seedUsers(sql);
   await seedCustomers(sql);
   await seedInvoices(sql);
