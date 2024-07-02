@@ -7,29 +7,57 @@ import {redirect} from "next/navigation";
 
 const FormSchema = z.object({
     id: z.string(),
-    customerId: z.string(),
-    amount: z.coerce.number(),
-    status: z.enum(['pending', 'paid']),
+    customerId: z.string({
+        invalid_type_error: 'Please select a customer.', // add a custom error message
+    }),
+    amount: z.coerce.number()
+        .gt(0, {message: 'Amount must be greater than 0.'}), // make sure amount is greater than 0
+    status: z.enum(['pending', 'paid'], {
+        invalid_type_error: 'Please select an invoice status.', // add a custom error message
+    }),
     date: z.string(),
 });
 
 const CreateInvoice = FormSchema.omit({id: true, date: true}); // Omit the id and date fields from the schema
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
-export async function createInvoice(formData: FormData) {
-    const {customerId, amount, status} = CreateInvoice.parse({
+export type State = {
+    errors?: {
+        customerId?: string[];
+        amount?: string[];
+        status?: string[];
+    };
+    message?: string | null;
+};
+
+// useActionState will pass prevState to your action now. Could set it as "_" if desired
+export async function createInvoice(prevState: State, formData: FormData) {
+    // 1. Validate the form data using Zod
+    const validatedFields = CreateInvoice.safeParse({ // use safeParse to get success or error field
         customerId: formData.get('customerId'),
         amount: formData.get('amount'),
         status: formData.get('status'),
     });
 
+    // 2. If the form data is invalid, return an error message
+    // safeParse will add success here if the form data is valid
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors, // zodError has flatten method
+            message: 'Missing Fields. Failed to Create Invoice.',
+        };
+    }
+
     // Or use this if formData object is huge:
     // const rawFormData = Object.fromEntries(formData.entries());
 
+    // 3. Prepare the data for insertion into the database
     // Store monetary values in cents in your database to eliminate floating point errors and ensure greater accuracy.
+    const { customerId, amount, status } = validatedFields.data;
     const amountInCents = amount * 100;
     const date = new Date().toISOString().split('T')[0]; // Get today's date in format "YYYY-MM-DD"
 
+    // 4. Insert the data into the database
     try {
         await sql`
             INSERT INTO dashboard.invoices (customer_id, amount, status, date)
@@ -43,6 +71,7 @@ export async function createInvoice(formData: FormData) {
         };
     }
 
+    // 5. Revalidate the cache for the invoices page and redirect to the invoices page
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
 }
