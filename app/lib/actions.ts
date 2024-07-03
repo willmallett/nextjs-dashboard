@@ -21,7 +21,7 @@ const FormSchema = z.object({
 const CreateInvoice = FormSchema.omit({id: true, date: true}); // Omit the id and date fields from the schema
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
-export type State = {
+export type InvoiceInputState = {
     errors?: {
         customerId?: string[];
         amount?: string[];
@@ -31,7 +31,7 @@ export type State = {
 };
 
 // useActionState will pass prevState to your action now. Could set it as "_" if desired
-export async function createInvoice(prevState: State, formData: FormData) {
+export async function createInvoice(prevState: InvoiceInputState, formData: FormData) {
     // 1. Validate the form data using Zod
     const validatedFields = CreateInvoice.safeParse({ // use safeParse to get success or error field
         customerId: formData.get('customerId'),
