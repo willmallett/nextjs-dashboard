@@ -23,16 +23,23 @@ export const { auth, signIn, signOut } = NextAuth({
     // next-auth docs: https://authjs.dev/getting-started/providers
     providers: [
         Credentials({
+            credentials: {
+                email: {},
+                password: {},
+            },
             async authorize(credentials) {
-                const parsedCredentials = z
-                    .object({
-                        email: z.string().email(),
-                        password: z.string().min(6),
-                    })
-                    .safeParse(credentials);
+                // Todo: zod is not working as expected. Works without it.
+                // const parsedCredentials: {success: boolean; data: {email: string; password: string;}} = z
+                //     .object({
+                //         email: z.string().email(),
+                //         password: z.string().min(6),
+                //     })
+                //     .safeParse(credentials);
+                //
+                // console.log('parsedCredentials:', JSON.stringify(parsedCredentials, null, 2));
 
-                if (!parsedCredentials.success) {
-                    const { email, password } = parsedCredentials.data;
+                // if (!parsedCredentials.success) {
+                    const { email, password } = credentials;
                     const user = await getUser(email);
 
                     if (!user) return null;
@@ -40,7 +47,7 @@ export const { auth, signIn, signOut } = NextAuth({
                     const passwordsMatch = await bcrypt.compare(password, user.password);
 
                     if (passwordsMatch) return user;
-                }
+                // }
 
                 console.log('Invalid credentials');
                 return null;
