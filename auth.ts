@@ -24,11 +24,10 @@ export const { auth, signIn, signOut } = NextAuth({
     providers: [
         Credentials({
             credentials: {
-                email: {},
-                password: {},
+                email: { label: "Email", type: "text", placeholder: "jsmith@gmail.com" },
+                password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                // Todo: zod is not working as expected. Works without it.
                 // const parsedCredentials: {success: boolean; data: {email: string; password: string;}} = z
                 //     .object({
                 //         email: z.string().email(),
