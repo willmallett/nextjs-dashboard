@@ -4,6 +4,11 @@ import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
 import {lusitana} from '@/app/ui/fonts';
 import {Suspense} from "react";
 import {CardSkeleton, InvoiceSkeleton, RevenueChartSkeleton} from "@/app/ui/skeletons";
+import {Metadata} from "next";
+
+export const metadata: Metadata = {
+    title: 'Dashboard',
+};
 
 export const experimental_ppr = true; // enable partial pre-rendering for this route
 
